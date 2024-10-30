@@ -1,0 +1,8 @@
+{%- for value in [
+    "pre-commit>=4.0.1" if pre_commit,
+    "ruff~="~ruff_version if ruff,
+    "ipykernel>=6.29.5" if jupyter,
+] if value -%}
+    {{- "\n" if not loop.first -}}
+    "{{ value }}",
+{%- endfor -%}

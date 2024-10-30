@@ -1,0 +1,20 @@
+{
+    "[python]": {
+{%- if ruff %}
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports.ruff": "explicit"
+        },
+{%- endif %}
+        "editor.rulers": [88],
+    },
+{%- if ruff %}
+    "ruff.organizeImports": true,
+    "ruff.lint.args": [
+        "--extend-ignore=I",
+    ],
+{%- endif %}
+    "python.languageServer": "Pylance",
+    "python.analysis.diagnosticMode": "workspace",
+}

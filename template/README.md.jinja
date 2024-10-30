@@ -1,0 +1,17 @@
+# {{ project_name }}
+
+{%- if rye %}
+
+## Setup
+
+This project's dependencies are managed by [Rye](https://rye.astral.sh). To get started, follow these steps:
+
+1. [Install Rye](https://rye.astral.sh/guide/installation).
+2. Clone this repository.
+3. Run this command in this directory: `rye {% if pre_commit %}run setup{% else %}sync{% endif %}`
+
+{%- else %}
+
+{#- TODO: instructions if not using Rye, optionally with pre-commit info #}
+
+{%- endif %}

@@ -1,0 +1,82 @@
+# includes
+
+# prompts
+
+project_name:
+  type: str
+  help: Project name
+  validator: |
+    {%- import "macros/validators.jinja" as validators -%}
+    {{- validators.not_empty(project_name) -}}
+    {{- validators.regex(project_name, "^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])$", ignorecase=true) -}}
+
+python_version:
+  type: str
+  default: '3.12.3'
+  validator: |
+    {%- import "macros/validators.jinja" as validators -%}
+    {{- validators.not_empty(python_version) -}}
+    {{- validators.regex(python_version, "^3\\.[0-9]+(\\.[0-9]+)?$") -}}
+
+private:
+  type: bool
+  default: false
+
+src:
+  type: bool
+  default: true
+
+package:
+  type: str
+  help: Package name (ie. directory name within src/)
+  when: '{{ src }}'
+  default: '{{ project_name|regex_replace("[-_.]+", "_") }}'
+  validator: |
+    {%- import "macros/validators.jinja" as validators -%}
+    {{- validators.not_empty(package) -}}
+    {{- validators.python_identifier(package) -}}
+
+jupyter:
+  type: bool
+  default: false
+
+rye:
+  type: bool
+  default: true
+
+# update_dependencies:
+#   type: bool
+#   when: '{{ rye }}'
+#   default: true
+
+pyright:
+  type: bool
+  default: true
+
+ruff:
+  type: bool
+  default: true
+
+ruff_version:
+  type: str
+  when: '{{ ruff }}'
+  default: '0.7.1'
+  validator: |
+    {%- import "macros/validators.jinja" as validators -%}
+    {{- validators.not_empty(ruff_version) -}}
+
+pre_commit:
+  type: bool
+  default: true
+
+vscode:
+  type: bool
+  default: true
+
+# Copier config
+
+_subdirectory: template
+
+# _tasks:
+#   - command: rye sync --update-all
+#     when: '{{ update_dependencies and rye }}'

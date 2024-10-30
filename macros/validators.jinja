@@ -1,0 +1,17 @@
+{% macro not_empty(value) -%}
+  {%- if not value -%}
+    Value must not be blank
+  {% endif -%}
+{%- endmacro %}
+
+{% macro regex(value, pattern, multiline=false, ignorecase=false) -%}
+  {%- if not value|regex_search(pattern, multiline=multiline, ignorecase=ignorecase) -%}
+    Value must match the following regex: {{ pattern }}
+  {% endif -%}
+{%- endmacro %}
+
+{% macro python_identifier(value) -%}
+  {%- if not value.isidentifier() -%}
+    Value must be a valid Python identifier
+  {% endif -%}
+{%- endmacro %}

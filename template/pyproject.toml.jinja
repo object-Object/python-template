@@ -1,0 +1,157 @@
+{%- if src -%}
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+{% endif -%}
+
+[project]
+name = "{{ project_name }}"
+version = "0.1.0"
+{%- if private %}
+classifiers = [
+    "Private :: Do Not Upload",
+]
+{%- endif %}
+requires-python = ">= {{ python_version|regex_replace('^(3\\.[0-9]+)(\\.[0-9]+)?$', '\\1') }}"
+dependencies = [
+]
+
+{%- if rye %}
+
+[tool.rye]
+managed = true
+{%- if not src %}
+virtual = true
+{%- endif %}
+dev-dependencies = [
+{%- filter indent(width=4) %}
+{% include "includes/dev_dependencies.jinja" %}
+{%- endfilter %}
+]
+
+{%- if pre_commit %}
+
+[tool.rye.scripts]
+setup = { chain = ["setup:sync", "setup:pre-commit"] }
+"setup:sync" = "rye sync"
+"setup:pre-commit" = "pre-commit install"
+
+{%- endif %}
+
+{%- else %}
+
+[project.optional-dependencies]
+dev = [
+{%- filter indent(width=4) %}
+{% include "includes/dev_dependencies.jinja" %}
+{%- endfilter %}
+]
+
+{%- endif %}
+
+{%- if src %}
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    "src/{{ package }}",
+]
+
+{%- endif %}
+
+{%- if ruff %}
+
+# linting/formatting
+
+[tool.ruff]
+extend-exclude = [
+    "**/venv",
+    "**/.*",
+    "**/__pycache__",
+]
+
+[tool.ruff.lint]
+extend-select = [
+    "I", # import sorting
+    "RUF022", # __all__ sorting
+]
+{%- if pyright %}
+extend-ignore = [
+    # covered by Pyright
+    "F821", # undefined variable
+    "F401", # imported but unused
+    "F841", # unused variable
+]
+{%- endif %}
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+
+{%- endif %}
+
+{%- if pyright %}
+
+# type checking
+
+[tool.pyright]
+{% if rye -%}
+venvPath = "."
+venv = ".venv"
+
+{% endif -%}
+exclude = [
+    "venv",
+    ".venv",
+]
+
+typeCheckingMode = "basic"
+
+enableExperimentalFeatures = true
+strictDictionaryInference = true
+strictListInference = true
+strictSetInference = true
+
+reportAssertAlwaysTrue = "error"
+reportConstantRedefinition = "error"
+reportDeprecated = "error"
+reportFunctionMemberAccess = "error"
+reportIncompatibleMethodOverride = "error"
+reportIncompatibleVariableOverride = "error"
+reportIncompleteStub = "error"
+reportInconsistentConstructor = "error"
+reportInvalidStringEscapeSequence = "error"
+reportInvalidStubStatement = "error"
+reportInvalidTypeVarUse = "error"
+reportMatchNotExhaustive = "error"
+reportMissingParameterType = "error"
+reportOverlappingOverload = "error"
+reportSelfClsParameterName = "error"
+reportTypeCommentUsage = "error"
+reportUnknownParameterType = "error"
+reportUnnecessaryCast = "error"
+reportUnnecessaryContains = "error"
+reportUnsupportedDunderAll = "error"
+reportUntypedBaseClass = "error"
+reportUntypedClassDecorator = "error"
+reportUntypedFunctionDecorator = "error"
+reportUntypedNamedTuple = "error"
+reportWildcardImportFromLibrary = "error"
+
+reportMissingTypeArgument = "warning"
+reportPrivateUsage = "warning"
+reportUnknownArgumentType = "warning"
+reportUnknownLambdaType = "warning"
+reportUnknownMemberType = "warning"
+reportUnknownVariableType = "warning"
+reportUnnecessaryComparison = "warning"
+reportUnnecessaryIsInstance = "warning"
+reportUnusedClass = "warning"
+reportUnusedExpression = "warning"
+reportUnusedFunction = "warning"
+reportUnusedImport = "warning"
+reportUnusedVariable = "warning"
+
+reportMissingTypeStubs = "none"
+reportDuplicateImport = "none"
+
+{%- endif %}
